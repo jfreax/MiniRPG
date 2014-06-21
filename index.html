@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>pMini RPG</title>
+    <title>Mini RPG</title>
     <style>
         body {
             margin: 0;
@@ -8,14 +8,40 @@
             background-color: #EEFFFF;
         }
     </style>
-    <script src="js/pixi.js"></script>
+    <script src="js/pixi.dev.js"></script>
 </head>
 <body>
     <script>
+        var WIDTH = 700;
+        var HEIGHT = 300;
+
         // create an new instance of a pixi stage
         var stage = new PIXI.Stage(0xEEFFFF);
-        var renderer = PIXI.autoDetectRenderer(400, 300);
+        var renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT);
         document.body.appendChild(renderer.view);
+
+
+        function node(backgroundColor, borderColor, x, y) {
+            var graphics = new PIXI.Graphics();
+
+            graphics.beginFill(backgroundColor);
+            graphics.lineStyle(1, borderColor, 1);
+            graphics.drawCircle(0, 0, 10.0)
+            graphics.endFill();
+
+            var sprite = new PIXI.Sprite(graphics.generateTexture());
+            sprite.position.x = x;
+            sprite.position.y = y;
+
+            return sprite;
+        }
+
+        var sprite = node(0x85b9bb, 0x476263, 10, 100);
+        sprite.setInteractive(true);
+        sprite.mousedown = function(touchData){
+            console.log("DOWN!");
+        }
+        stage.addChild(sprite);
 
         requestAnimFrame( animate );
         function animate() {
