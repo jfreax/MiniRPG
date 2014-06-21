@@ -1,37 +1,52 @@
-WIDTH = 700
-HEIGHT = 300
+class Game
+  WIDTH = 800
+  HEIGHT = 400
 
-# create an new instance of a pixi stage
-stage = new PIXI.Stage(0xEEFFFF)
-renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT)
-document.body.appendChild(renderer.view)
+  constructor: () ->
+    # create an new instance of a pixi stage
+    @stage = new PIXI.Stage(0xEEEEEE)
+    @renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT)
+    document.body.appendChild(@renderer.view)
+
+  run: () =>
+      requestAnimFrame(@run)
+      @renderer.render(@stage)
+
+  addNode: (node) =>
+    @stage.addChild(node)
 
 
-node = (backgroundColor, borderColor, x, y) ->
+
+class Node extends PIXI.Sprite
+  SIZE: 10
+
+  backgroundColor = 0x85b9bb
+  borderColor = 0x476263
+
+  constructor: (x, y) ->
     graphics = new PIXI.Graphics()
-
     graphics.beginFill(backgroundColor)
     graphics.lineStyle(1, borderColor, 1)
-    graphics.drawCircle(0, 0, 10.0)
+    graphics.drawCircle(0, 0, @SIZE)
     graphics.endFill()
 
-    sprite = new PIXI.Sprite(graphics.generateTexture())
-    sprite.position.x = x
-    sprite.position.y = y
+    texture = graphics.generateTexture()
+    super texture
 
-    return sprite
+    @interactive = true
+    @position.x = x
+    @position.y = y
+    @anchor.x = 0.5
+    @anchor.y = 0.5
 
-
-sprite = node(0x85b9bb, 0x476263, 10, 100)
-sprite.setInteractive(true)
-sprite.mousedown = (touchData) ->
+  mousedown: (touchData) ->
     console.log("DOWN!")
 
-stage.addChild(sprite)
+# $ ->
+game = new Game
+requestAnimFrame game.run
 
-animate = () ->
-    requestAnimFrame(animate);
+testnode = new Node(40, 100)
+game.addNode(testnode)
 
-    # render the stage
-    renderer.render(stage)
-requestAnimFrame( animate );
+
