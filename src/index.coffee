@@ -4,16 +4,52 @@ HEIGHT = 400
 ##
 #
 ##
+randomIntFromInterval = (min,max) ->
+  return Math.floor(Math.random()*(max-min+1)+min)
+
+
+##
+#
+##
 class Game
-  constructor: () ->
+  graphics: new PIXI.Graphics();
+  connectedNodes: []
+
+  constructor: (@numberOfPlayer, @heightOfField) ->
     # create an new instance of a pixi stage
     @stage = new PIXI.Stage(0xEEEEEE)
     @renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight)
     document.body.appendChild(@renderer.view)
 
+    @initEvents()
+    @init()
+
+  initEvents: () =>
     # Global events
     window.onresize = () =>
       @onresize()
+
+  init: () =>
+    @stage.addChild(@graphics);
+
+    percentage = @heightOfField * 0.8
+    propotationFactor = 2.5
+    distance = {x: WIDTH / (propotationFactor*@heightOfField - 1 + percentage), y:  HEIGHT / @heightOfField}
+
+    for i in [0..@heightOfField-1]
+      heightChance = Math.abs((@heightOfField/2-i) / @heightOfField/2) * 2.5
+
+      oldNode = undefined
+      for j in [2..propotationFactor*@heightOfField - 1 + randomIntFromInterval(-percentage, percentage)]
+        widthChance = Math.abs(((propotationFactor/2) * @heightOfField)-j) / ((propotationFactor/2) * @heightOfField)
+
+        if Math.random() - heightChance > widthChance
+          newNode = new Node(distance.x * (j-0.5) + randomIntFromInterval(0, distance.x/3), distance.y * (i+0.5))
+          @addNode(newNode)
+
+          if oldNode != undefined
+            @connectNode(oldNode, newNode)
+          oldNode = newNode
 
   run: () =>
       requestAnimFrame(@run)
@@ -22,9 +58,25 @@ class Game
   addNode: (node) =>
     @stage.addChild(node)
 
+  connectNode: (start, end, addToList = true) =>
+    if addToList
+      @connectedNodes.push({start: start, end: end})
+
+    @graphics.beginFill(0x0);
+    @graphics.lineStyle(10, 0xFFFFFF, 1);
+    @graphics.moveTo(start.position.x, start.position.y);
+    @graphics.lineTo(end.position.x, end.position.y);
+    @graphics.endFill();
+
   onresize: () =>
+    @renderer.resize(window.innerWidth, window.innerHeight)
     for child in @stage.children
-      child.init()
+      if child instanceof Node
+        child.init()
+
+    @graphics.clear()
+    for connections in @connectedNodes
+      @connectNode(connections.start, connections.end, false)
 
 ##
 #
@@ -61,10 +113,6 @@ class Node extends PIXI.Sprite
     console.log("DOWN!")
 
 # $ ->
-game = new Game
+game = new Game(2, 5)
 requestAnimFrame(game.run)
-
-testnode = new Node(40, 100)
-game.addNode(testnode)
-
 
