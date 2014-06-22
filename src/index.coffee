@@ -60,15 +60,14 @@ class Game
           # and maybe, add some diagonal connections
           if !oldNodeHasDiagonal
             chanceFactor = 1
-            if @nodes[i-1] != undefined and @nodes[i-1][j-1] != undefined
-              if Math.random() > 0.5
-                @connectNode(newNode, @nodes[i-1][j-1])
-                chanceFactor = 0.8
-                oldNodeHasDiagonal = true
-            if @nodes[i-1] != undefined and @nodes[i-1][j+1] != undefined
-              if Math.random() * chanceFactor > 0.5
-                @connectNode(newNode, @nodes[i-1][j+1])
-                oldNodeHasDiagonal = true
+            diagDist = randomIntFromInterval(0, 3)
+            if @nodes[i-1] != undefined and @nodes[i-1][j-diagDist] != undefined and Math.random() > 0.5
+              @connectNode(newNode, @nodes[i-1][j-diagDist])
+              chanceFactor = 0.8
+              oldNodeHasDiagonal = true
+            if @nodes[i-1] != undefined and @nodes[i-1][j+diagDist] != undefined and Math.random() * chanceFactor > 0.5
+              @connectNode(newNode, @nodes[i-1][j+diagDist])
+              oldNodeHasDiagonal = true
           else
             oldNodeHasDiagonal = false
 
@@ -90,7 +89,13 @@ class Game
       @connectedNodes.push({start: start, end: end})
 
     @graphics.beginFill(0x0);
-    @graphics.lineStyle(10, 0xFFFFFF, 1);
+    @graphics.lineStyle(10, 0xCDCDCD, 1);
+    @graphics.moveTo(start.position.x, start.position.y);
+    @graphics.lineTo(end.position.x, end.position.y);
+    @graphics.endFill();
+
+    @graphics.beginFill(0x0);
+    @graphics.lineStyle(8, 0xFFFFFF, 1);
     @graphics.moveTo(start.position.x, start.position.y);
     @graphics.lineTo(end.position.x, end.position.y);
     @graphics.endFill();
