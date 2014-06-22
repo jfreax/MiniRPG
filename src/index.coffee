@@ -1,12 +1,19 @@
-class Game
-  WIDTH = 800
-  HEIGHT = 400
+WIDTH = 800
+HEIGHT = 400
 
+##
+#
+##
+class Game
   constructor: () ->
     # create an new instance of a pixi stage
     @stage = new PIXI.Stage(0xEEEEEE)
-    @renderer = PIXI.autoDetectRenderer(WIDTH, HEIGHT)
+    @renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight)
     document.body.appendChild(@renderer.view)
+
+    # Global events
+    window.onresize = () =>
+      @onresize()
 
   run: () =>
       requestAnimFrame(@run)
@@ -15,8 +22,13 @@ class Game
   addNode: (node) =>
     @stage.addChild(node)
 
+  onresize: () =>
+    for child in @stage.children
+      child.init()
 
-
+##
+#
+##
 class Node extends PIXI.Sprite
   SIZE: 10
 
@@ -33,9 +45,15 @@ class Node extends PIXI.Sprite
     texture = graphics.generateTexture()
     super texture
 
+    @originalPosition = {x: x, y: y }
+    @init()
+
+  init: () =>
+    scale = {x: window.innerWidth / WIDTH, y: window.innerHeight / HEIGHT }
+
     @interactive = true
-    @position.x = x
-    @position.y = y
+    @position.x = @originalPosition.x * scale.x
+    @position.y = @originalPosition.y * scale.y
     @anchor.x = 0.5
     @anchor.y = 0.5
 
@@ -44,7 +62,7 @@ class Node extends PIXI.Sprite
 
 # $ ->
 game = new Game
-requestAnimFrame game.run
+requestAnimFrame(game.run)
 
 testnode = new Node(40, 100)
 game.addNode(testnode)
