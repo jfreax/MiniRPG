@@ -14,7 +14,6 @@ randomIntFromInterval = (min,max) ->
 class Game
   graphics: new PIXI.Graphics();
   nodes: []
-  connectedNodes: []
 
   constructor: (@numberOfPlayer, @heightOfField) ->
     # create an new instance of a pixi stage
@@ -39,38 +38,58 @@ class Game
 
     for i in [0..@heightOfField-1]
       heightChance = Math.abs((@heightOfField/2-i) / @heightOfField/2) * 2.5
+      heightChance = heightChance*heightChance * 2
 
       oldNode = undefined
-      oldNodeHasDiagonal = false
       for j in [2..propotationFactor*@heightOfField - 1 + randomIntFromInterval(-percentage, percentage)]
-        widthChance = Math.abs(((propotationFactor/2) * @heightOfField)-j) / ((propotationFactor/2) * @heightOfField)
+        widthChance = Math.abs(((propotationFactor/2) * @heightOfField)-j) / ((propotationFactor/2) * @heightOfField) * 0.8
 
         if Math.random() - heightChance > widthChance
           # add a new node
           newNode = new Node(
             Math.round(distance.x * (j-0.5) + randomIntFromInterval(0, distance.x/3)),
-            Math.round(distance.y * (i+0.5)))
+            Math.round(distance.y * (i+0.5)),
+            i, j)
           @addNode(newNode, i, j)
 
           # connect with other nodes
           if oldNode != undefined
-            # with direct right neighboor
+            # with direct right neighbour
             @connectNode(oldNode, newNode)
 
           # and maybe, add some diagonal connections
-          if !oldNodeHasDiagonal
+          if @nodes[i-1] != undefined
             chanceFactor = 1
-            diagDist = randomIntFromInterval(0, 3)
-            if @nodes[i-1] != undefined and @nodes[i-1][j-diagDist] != undefined and Math.random() > 0.5
-              @connectNode(newNode, @nodes[i-1][j-diagDist])
-              chanceFactor = 0.8
-              oldNodeHasDiagonal = true
-            if @nodes[i-1] != undefined and @nodes[i-1][j+diagDist] != undefined and Math.random() * chanceFactor > 0.5
-              @connectNode(newNode, @nodes[i-1][j+diagDist])
-              oldNodeHasDiagonal = true
-          else
-            oldNodeHasDiagonal = false
+            nodesToConnect = []
+            for x in [-4..4]
+              nodesToConnect.push(@nodes[i-1][j+x])
 
+            for nodeToConnect in nodesToConnect
+              if nodeToConnect != undefined and nodeToConnect.connection.length < 2 and Math.random() * chanceFactor > 0.0
+                console.log("Connect!")
+                @connectNode(newNode, nodeToConnect)
+                chanceFactor = 0.8
+
+          # test if all levels are connected
+          #connected = []
+          #for a in [0..@heightOfField-1]
+          #  if @nodes[a] != undefined
+          #    for start in @nodes[a]
+          #      if start != undefined
+          #        for end in start.connection
+          #          if start.i == end.i + 1
+          #            connected[start.i] = true
+          #            break;
+
+          #for a in [1..@heightOfField-1]
+          #  if connected[a] == undefined || connected[a] == false
+          #    startNode = undefined
+          #    endNode = undefined
+          #    for start in @nodes[a]
+          #      if start != undefined
+          #        startNode = start
+          #        break;
+          #    @connectNode(newNode, nodeToConnect)
 
           oldNode = newNode
 
@@ -86,7 +105,8 @@ class Game
 
   connectNode: (start, end, addToList = true) =>
     if addToList
-      @connectedNodes.push({start: start, end: end})
+      start.addConnection(end)
+      end.addConnection(start)
 
     @graphics.beginFill(0x0);
     @graphics.lineStyle(10, 0xCDCDCD, 1);
@@ -107,8 +127,12 @@ class Game
         child.init()
 
     @graphics.clear()
-    for connections in @connectedNodes
-      @connectNode(connections.start, connections.end, false)
+    for a in [0..@heightOfField-1]
+      if @nodes[a] != undefined
+        for start in @nodes[a]
+          if start != undefined
+            for end in start.connection
+              @connectNode(start, end, false)
 
 ##
 #
@@ -119,7 +143,7 @@ class Node extends PIXI.Sprite
   backgroundColor = 0x85b9bb
   borderColor = 0x476263
 
-  constructor: (x, y) ->
+  constructor: (x, y, @i, @j) ->
     graphics = new PIXI.Graphics()
     graphics.beginFill(backgroundColor)
     graphics.lineStyle(1, borderColor, 1)
@@ -129,17 +153,21 @@ class Node extends PIXI.Sprite
     texture = graphics.generateTexture()
     super texture
 
+    @connection = []
     @originalPosition = {x: x, y: y }
     @init()
 
   init: () =>
-    scale = {x: window.innerWidth / WIDTH, y: window.innerHeight / HEIGHT }
+    scale = {x: Math.max(window.innerWidth / WIDTH, 1), y: Math.max(window.innerHeight / HEIGHT, 1)}
 
     @interactive = true
     @position.x = @originalPosition.x * scale.x
     @position.y = @originalPosition.y * scale.y
     @anchor.x = 0.5
     @anchor.y = 0.5
+
+  addConnection: (endNode) =>
+    @connection.push(endNode)
 
   mousedown: (touchData) ->
     console.log("DOWN!")
