@@ -13,6 +13,7 @@ randomIntFromInterval = (min,max) ->
 ##
 class Game
   graphics: new PIXI.Graphics();
+  nodes: []
   connectedNodes: []
 
   constructor: (@numberOfPlayer, @heightOfField) ->
@@ -40,22 +41,48 @@ class Game
       heightChance = Math.abs((@heightOfField/2-i) / @heightOfField/2) * 2.5
 
       oldNode = undefined
+      oldNodeHasDiagonal = false
       for j in [2..propotationFactor*@heightOfField - 1 + randomIntFromInterval(-percentage, percentage)]
         widthChance = Math.abs(((propotationFactor/2) * @heightOfField)-j) / ((propotationFactor/2) * @heightOfField)
 
         if Math.random() - heightChance > widthChance
-          newNode = new Node(distance.x * (j-0.5) + randomIntFromInterval(0, distance.x/3), distance.y * (i+0.5))
-          @addNode(newNode)
+          # add a new node
+          newNode = new Node(
+            Math.round(distance.x * (j-0.5) + randomIntFromInterval(0, distance.x/3)),
+            Math.round(distance.y * (i+0.5)))
+          @addNode(newNode, i, j)
 
+          # connect with other nodes
           if oldNode != undefined
+            # with direct right neighboor
             @connectNode(oldNode, newNode)
+
+          # and maybe, add some diagonal connections
+          if !oldNodeHasDiagonal
+            chanceFactor = 1
+            if @nodes[i-1] != undefined and @nodes[i-1][j-1] != undefined
+              if Math.random() > 0.5
+                @connectNode(newNode, @nodes[i-1][j-1])
+                chanceFactor = 0.8
+                oldNodeHasDiagonal = true
+            if @nodes[i-1] != undefined and @nodes[i-1][j+1] != undefined
+              if Math.random() * chanceFactor > 0.5
+                @connectNode(newNode, @nodes[i-1][j+1])
+                oldNodeHasDiagonal = true
+          else
+            oldNodeHasDiagonal = false
+
+
           oldNode = newNode
 
   run: () =>
       requestAnimFrame(@run)
       @renderer.render(@stage)
 
-  addNode: (node) =>
+  addNode: (node, i, j) =>
+    if @nodes[i] == undefined
+      @nodes[i] = []
+    @nodes[i][j] = node
     @stage.addChild(node)
 
   connectNode: (start, end, addToList = true) =>
