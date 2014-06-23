@@ -31,67 +31,53 @@ class Game
 
   init: () =>
     @stage.addChild(@graphics);
+    @maxWidth = 3.5 * @heightOfField
 
-    percentage = @heightOfField * 0.8
-    propotationFactor = 2.5
-    distance = {x: WIDTH / (propotationFactor*@heightOfField - 1 + percentage), y:  HEIGHT / @heightOfField}
+    # init 2d node array
+    for i in [0..@maxWidth]
+      @nodes[i] = []
 
-    for i in [0..@heightOfField-1]
-      heightChance = Math.abs((@heightOfField/2-i) / @heightOfField/2) * 2.5
-      heightChance = heightChance*heightChance * 2
+    half = @heightOfField / 2
+    distance = {x: WIDTH / @maxWidth, y:  HEIGHT / @heightOfField}
 
+    # for each level
+    for lvl in [0..@heightOfField-1]
+      widthOnThisLevel = @maxWidth - @maxWidth * Math.abs((half - lvl) / @heightOfField)
+      widthOnThisLevel = widthOnThisLevel*widthOnThisLevel / 20
+      console.log(widthOnThisLevel)
+      widthOnThisLevel -= randomIntFromInterval(0, @maxWidth*0.3)
+
+      # add nodes
+      toCenter = (@maxWidth - widthOnThisLevel) / 2
       oldNode = undefined
-      for j in [2..propotationFactor*@heightOfField - 1 + randomIntFromInterval(-percentage, percentage)]
-        widthChance = Math.abs(((propotationFactor/2) * @heightOfField)-j) / ((propotationFactor/2) * @heightOfField) * 0.8
+      for w in [toCenter..widthOnThisLevel+toCenter]
+        newNode = new Node(
+          Math.round(distance.x * (w-0.5) + randomIntFromInterval(0, distance.x/3)),
+          Math.round(distance.y * (lvl+0.5)), lvl, w)
+        @addNode(newNode, Math.round(lvl), Math.round(w))
 
-        if Math.random() - heightChance > widthChance
-          # add a new node
-          newNode = new Node(
-            Math.round(distance.x * (j-0.5) + randomIntFromInterval(0, distance.x/3)),
-            Math.round(distance.y * (i+0.5)),
-            i, j)
-          @addNode(newNode, i, j)
+        # connect with other nodes
+        if oldNode != undefined
+          # with direct right neighbour
+          @connectNode(oldNode, newNode)
 
-          # connect with other nodes
-          if oldNode != undefined
-            # with direct right neighbour
-            @connectNode(oldNode, newNode)
+        # and maybe, add some diagonal connections
+        if @nodes[lvl-1] != undefined
+          chanceFactor = 1
+          nodesToConnect = []
+          for x in [-2..2]
+            nodesToConnect.push(@nodes[Math.round(lvl)-1][Math.round(w)+x])
 
-          # and maybe, add some diagonal connections
-          if @nodes[i-1] != undefined
-            chanceFactor = 1
-            nodesToConnect = []
-            for x in [-4..4]
-              nodesToConnect.push(@nodes[i-1][j+x])
+          for nodeToConnect in nodesToConnect
+            console.log(nodeToConnect)
+            if nodeToConnect != undefined and nodeToConnect.connection.length < 3 and Math.random() > 0.4
+              console.log("Connect!")
+              @connectNode(newNode, nodeToConnect)
+              chanceFactor = 0.8
 
-            for nodeToConnect in nodesToConnect
-              if nodeToConnect != undefined and nodeToConnect.connection.length < 2 and Math.random() * chanceFactor > 0.0
-                console.log("Connect!")
-                @connectNode(newNode, nodeToConnect)
-                chanceFactor = 0.8
 
-          # test if all levels are connected
-          #connected = []
-          #for a in [0..@heightOfField-1]
-          #  if @nodes[a] != undefined
-          #    for start in @nodes[a]
-          #      if start != undefined
-          #        for end in start.connection
-          #          if start.i == end.i + 1
-          #            connected[start.i] = true
-          #            break;
-
-          #for a in [1..@heightOfField-1]
-          #  if connected[a] == undefined || connected[a] == false
-          #    startNode = undefined
-          #    endNode = undefined
-          #    for start in @nodes[a]
-          #      if start != undefined
-          #        startNode = start
-          #        break;
-          #    @connectNode(newNode, nodeToConnect)
-
-          oldNode = newNode
+        # remember old node
+        oldNode = newNode
 
   run: () =>
       requestAnimFrame(@run)
@@ -127,9 +113,9 @@ class Game
         child.init()
 
     @graphics.clear()
-    for a in [0..@heightOfField-1]
-      if @nodes[a] != undefined
-        for start in @nodes[a]
+    for lvl in [0..@heightOfField-1]
+      if @nodes[lvl] != undefined
+        for start in @nodes[lvl]
           if start != undefined
             for end in start.connection
               @connectNode(start, end, false)
