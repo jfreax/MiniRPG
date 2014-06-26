@@ -4,8 +4,6 @@ import 'dart:html';
 @CustomTag('game-world')
 class GameWorld extends PolymerElement {
   // attributes
-  @published num width = 0;
-  @published num height = 0;
   @published bool debug = false;
   
   // private
@@ -17,11 +15,6 @@ class GameWorld extends PolymerElement {
 
 
   GameWorld.created() : super.created() {
-    if (width == 0 || height == 0) {
-      width = window.innerWidth;
-      height = window.innerHeight;
-    }
-    
     _renderer = $['renderer'] as DivElement;
     _fpsDisplay = $['debugFPS'] as SpanElement;
     _fpsDisplay.text = "0";
@@ -30,7 +23,7 @@ class GameWorld extends PolymerElement {
     addNode(100, 0);
     addNode(50, 80);
     
-    update(0);
+    requestUpdate();
   }
   
   void addNode(num x, num y) {

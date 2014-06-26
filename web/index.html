@@ -8,56 +8,37 @@
 
     <script src="packages/web_components/platform.js"></script>
     <script src="packages/web_components/dart_support.js"></script>
+    
+    <link rel="import" href="packages/core_elements/core_toolbar.html">
     <link rel="import" href="packages/core_elements/core_icons.html">
     <link rel="import" href="packages/core_elements/core_icon.html">
     <link rel="import" href="packages/core_elements/core_icon_button.html">
+    
     <link rel="import" href="game_world.html">
+    
     <script type="application/dart">export 'package:polymer/init.dart';</script>
     
-          <style shim-shadowdom>
-        .fab {
-          position: relative;
-          display: inline-block;
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          color: #fff;
-          overflow: hidden;
-          transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          transition-delay: 0.2s;
-          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-        }
-        
-        .fab.red {
-          background-color: #d23f31;
-        }
-        
-        .fab.blue {
-          background-color: #4285f4;
-        }
-        
-        .fab.green {
-          background-color: #0f9d58;
-        }
-        
-        .fab:active {
-          box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
-          transition-delay: 0s;
-        }
-        
-        .fab > core-icon {
-          margin: 16px;
-        }
-        
-        .fab > core-icon::shadow path {
-          fill: #fff;
-        }
+    <style shim-shadowdom>
+      body {
+        margin: 0 0 0 0;
+      }
+      core-toolbar {
+        background-color: #009688;
+        color: #fff;
+        fill: #fff;
+        margin-bottom: 8px;
+      }   
     </style>
-
 </head>
 
 <body unresolved>
 
+<core-toolbar>
+    <core-icon-button icon="menu"></core-icon-button>
+    <span flex>MiniRPG</span>
+    <core-icon-button icon="refresh"></core-icon-button>
+    <core-icon-button icon="add"></core-icon-button>
+</core-toolbar>
 <game-world></game-world>
 
 </body>

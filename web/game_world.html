@@ -3,7 +3,7 @@
 <link rel="import" href="packages/paper_elements/paper_ripple.html">
 <link rel="import" href="game_node.html">
 
-<polymer-element name="game-world" attributes="width height debug">
+<polymer-element name="game-world" attributes="debug">
     <template>
       <div id="renderer"></div>
       <!--<game-node x="100" y="0"></game-node>-->
@@ -13,12 +13,8 @@
 
       <style>
         #renderer {
-            position: absolute;
-            width: {{ width }}px;
-            height: {{ height }}px;
             top: 0;
             left: 0;
-            overflow: hidden;
         }
         #debug {
             position: absolute;
