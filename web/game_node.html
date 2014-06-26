@@ -1,45 +1,15 @@
 <link rel="import" href="packages/polymer/polymer.html">
 <link rel="import" href="packages/core_elements/core_icon.html">
 <link rel="import" href="packages/paper_elements/paper_ripple.html">
-<link rel="import" href="game_node.html">
 
-<polymer-element name="game-world" attributes="width height debug">
+<polymer-element name="game-node" attributes="x y type">
     <template>
-      <div id="renderer"></div>
-      <!--<game-node x="100" y="0"></game-node>-->
-      <div id="debug">
-          <p>Total FPS: <span id="debugFPS"></span></p>
+      <div class="fab red" style="left: {{ x }}px; top: {{ y }}px;">
+        <core-icon icon="more-horiz"></core-icon>
+        <paper-ripple class="circle recenteringTouch" fit></paper-ripple>
       </div>
 
       <style>
-        #renderer {
-            position: absolute;
-            width: {{ width }}px;
-            height: {{ height }}px;
-            top: 0;
-            left: 0;
-            overflow: hidden;
-        }
-        #debug {
-            position: absolute;
-            top: 0;
-            left: 0;
-            font-family: verdana, monospace;
-            font-size: 10px;
-        }
-
-        .button {
-            display: inline-block;
-            position: relative;
-            width: 120px;
-            height: 32px;
-            line-height: 32px;
-            border-radius: 2px;
-            font-size: 0.9em;
-            background-color: #fff;
-            color: #646464;
-        }
-        
         .fab {
           position: relative;
           display: inline-block;
@@ -79,7 +49,5 @@
         }
       </style>
     </template>
-    <style>
-    </style>
-    <script type="application/dart" src="game_world.dart"></script>
+    <script type="application/dart" src="game_node.dart"></script>
 </polymer-element>
