@@ -7,6 +7,9 @@ class GameWorld extends PolymerElement {
   @published num width = 0;
   @published num height = 0;
   @published bool debug = false;
+  
+  DivElement _renderer;
+  SpanElement _fpsCounter;
 
 
   GameWorld.created() : super.created() {
@@ -15,11 +18,17 @@ class GameWorld extends PolymerElement {
       height = window.innerHeight;
     }
     
-    ($['debugFPS'] as SpanElement).text = "0";
+    _renderer = $['renderer'] as DivElement;
+    _fpsCounter = $['debugFPS'] as SpanElement;
+    _fpsCounter.text = "0";
     
-    $['renderer'].children.add(new Element.tag('game-node')..attributes["x"] = "100");
-    $['renderer'].children.add(new Element.tag('game-node')..attributes["x"] = "10"..attributes["y"] = "60");
-
+    
+    addNode(100, 0);
+    addNode(50, 80);
+  }
+  
+  addNode(num x, num y) {
+    _renderer.children.add(new Element.tag('game-node')..attributes["x"] = x.toString()..attributes["y"] = y.toString());
   }
 
 
