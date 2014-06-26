@@ -1,0 +1,48 @@
+<link rel="import" href="packages/polymer/polymer.html">
+
+<polymer-element name="game-world" attributes="width height debug">
+    <template>
+        <canvas id="renderer" width="{{ width }}" height="{{ height }}"></canvas>
+        <!--<paper-icon-button src="menu"></paper-icon-button>-->
+        <div id="debug">
+            <p>Total FPS: <span id="debugFPS"></span></p>
+        </div>
+    </template>
+
+
+    <style>
+        game-world {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        game-world #renderer {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        game-world #debug {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-family: verdana, monospace;
+            font-size: 10px;
+            color: white;
+            display: none;
+        }
+
+        .button {
+            display: inline-block;
+            position: relative;
+            width: 120px;
+            height: 32px;
+            line-height: 32px;
+            border-radius: 2px;
+            font-size: 0.9em;
+            background-color: #fff;
+            color: #646464;
+        }
+    </style>
+    <script type="application/dart" src="game_world.dart"></script>
+</polymer-element>

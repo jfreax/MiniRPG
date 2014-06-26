@@ -1,0 +1,3 @@
+[submodule "dist/Pixi.dart"]
+	path = dist/Pixi.dart
+	url = git@github.com:Macdu/Pixi.dart.git

@@ -1,0 +1,14 @@
+name: MiniRPG
+description: "MiniRPG"
+dependencies:
+  browser: ">=0.10.0+2 <0.11.0"
+  polymer: ">=0.11.0 <0.12.0"
+  paper_elements: any
+  pixi:
+      path: dist/Pixi.dart/
+
+environment:
+  sdk: ">=0.8.10+6 <2.0.0"
+transformers:
+- polymer:
+    entry_points: web/index.html
