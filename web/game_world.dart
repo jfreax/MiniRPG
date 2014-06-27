@@ -36,6 +36,9 @@ class GameWorld extends PolymerElement {
     _fpsDisplay.text = "0";
     
     _debugDisplay = $['debug'] as DivElement;
+    if (window.localStorage.containsKey("debug")) {
+      setDebug(window.localStorage["debug"].toLowerCase() == "true");
+    }
         
     generateMap();
     requestUpdate();
@@ -88,6 +91,8 @@ class GameWorld extends PolymerElement {
   void setDebug(bool debug)
   {
     this.debug = debug;
+    window.localStorage["debug"] = debug.toString();
+    
     if (debug) {
       _debugDisplay.style.visibility = "visible";
     } else {
