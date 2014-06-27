@@ -3,6 +3,7 @@ import 'dart:html';
 import 'dart:svg' as svg;
 import 'dart:math';
 
+import 'utils/Array2d.dart';
 import 'game_node.dart';
 
 @CustomTag('game-world')
@@ -17,6 +18,10 @@ class GameWorld extends PolymerElement {
   @published num numberOfPlayer = 2;
   @published bool debug = false;
   
+  // public
+  num height;
+  num width;
+  
   // private
   num _renderTime;
   num _fpsAverage;
@@ -25,10 +30,14 @@ class GameWorld extends PolymerElement {
 
   DivElement _renderer;
   svg.SvgElement _background;
+  
+  Array2d<GameNode> _nodes;
 
 
   GameWorld.created() : super.created()
   {
+    _nodes = new Array2d<GameNode>(4 * size, size);
+    
     _renderer = $['renderer'] as DivElement;
     _background = $['background'] as svg.SvgElement;
     
@@ -39,6 +48,9 @@ class GameWorld extends PolymerElement {
     if (window.localStorage.containsKey("debug")) {
       setDebug(window.localStorage["debug"].toLowerCase() == "true");
     }
+    
+    width = window.innerWidth;
+    height = window.innerHeight;
         
     generateMap();
     requestUpdate();
@@ -46,17 +58,25 @@ class GameWorld extends PolymerElement {
   
   void generateMap()
   {
-    GameNode node1 = _addNode(100, 0);
-    GameNode node2 = _addNode(100, 80);
+    GameNode node1 = _addNode(1, 0);
+    GameNode node2 = _addNode(1, 1);
+    GameNode node3 = _addNode(2, 1);
+    _addNode(3, 1);_addNode(4, 1);
     
     _connectNodes(node1, node2);
   }
   
-  GameNode _addNode(num x, num y)
+  GameNode _addNode(num pos, num lvl)
   {
+    num x = (width / (4 * size)) * pos;
+    num y = (height / size) * lvl;
+    
+    print(height);
+    
     GameNode newNode = new Element.tag('game-node') as GameNode;
     newNode.setPosition(x, y);
     _renderer.children.add(newNode);
+    _nodes[pos][lvl] = newNode;
     
     return newNode;
   }
@@ -67,9 +87,23 @@ class GameWorld extends PolymerElement {
     svg.PathSegList segList = path.pathSegList;
     path.attributes["stroke"] = "red";
     path.attributes["stroke-width"] = "20";
+    
+    num x1 = node1.x + node1.radius/2;
+    num x2 = node2.x + node2.radius/2;
+    num y1 = node1.y + node1.radius/2;
+    num y2 = node2.y + node2.radius/2;
+    
+    num max_x = max(x1, x2);
+    if (max_x > int.parse(_background.attributes["width"])) {
+      _background.attributes["width"] = max_x.toString();
+    }
+    num max_y = max(y1, y2);
+    if (max_y > int.parse(_background.attributes["height"])) {
+      _background.attributes["height"] = max_y.toString();
+    }
 
-    segList.appendItem(path.createSvgPathSegMovetoAbs(node1.x + node1.radius/2, node1.y + node1.radius/2));
-    segList.appendItem(path.createSvgPathSegLinetoAbs(node2.x + node2.radius/2, node2.y + node2.radius/2));
+    segList.appendItem(path.createSvgPathSegMovetoAbs(x1, y1));
+    segList.appendItem(path.createSvgPathSegLinetoAbs(x2, y2));
     segList.appendItem(path.createSvgPathSegClosePath());
     
     _background.append(path);
