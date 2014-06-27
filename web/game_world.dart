@@ -21,6 +21,7 @@ class GameWorld extends PolymerElement {
   num _renderTime;
   num _fpsAverage;
   SpanElement _fpsDisplay;
+  DivElement _debugDisplay;
 
   DivElement _renderer;
   svg.SvgElement _background;
@@ -34,6 +35,8 @@ class GameWorld extends PolymerElement {
     _fpsDisplay = $['debugFPS'] as SpanElement;
     _fpsDisplay.text = "0";
     
+    _debugDisplay = $['debug'] as DivElement;
+        
     generateMap();
     requestUpdate();
   }
@@ -71,18 +74,32 @@ class GameWorld extends PolymerElement {
 
   void _update(num _)
   {
-    num time = new DateTime.now().millisecondsSinceEpoch;
-    if (_renderTime != null) showFps(1000 / (time - _renderTime));
-    _renderTime = time;
+    if (debug) {
+      num time = new DateTime.now().millisecondsSinceEpoch;
+      if (_renderTime != null) showFps(1000 / (time - _renderTime));
+      _renderTime = time;
+    }
     
     requestUpdate();
+  }
+  
+  // public
+  
+  void setDebug(bool debug)
+  {
+    this.debug = debug;
+    if (debug) {
+      _debugDisplay.style.visibility = "visible";
+    } else {
+      _debugDisplay.style.visibility = "hidden";
+    }
   }
   
   void requestUpdate()
   {
     window.requestAnimationFrame(_update);
   }
-  
+
   void showFps(num fps) {
     if (_fpsAverage == null) _fpsAverage = fps;
     _fpsAverage = fps * 0.05 + _fpsAverage * 0.95;

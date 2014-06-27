@@ -18,6 +18,7 @@
     
     <link rel="import" href="game_world.html">
     <link rel="import" href="my_scaffold.html">
+    <link rel="import" href="ui/minirpg_menu.html">
     
     <script type="application/dart">export 'package:polymer/init.dart';</script>
     
@@ -38,7 +39,7 @@
         bottom: 0;
         left: 0;
         fill: white;
-      }
+      }minirpg-menu
     </style>
 </head>
 
@@ -50,12 +51,11 @@
       <span flex>Options</span>
     </core-toolbar>
     <core-menu theme="core-light-theme">
-      <core-item icon="settings" label="item1"></core-item>
-      <core-item icon="settings" label="item2"></core-item>
+      <minirpg-menu></minirpg-menu>
     </core-menu>
   </core-header-panel>
 
-  <game-world></game-world>  
+  <game-world id="game-world"></game-world>  
 </my-scaffold>
 
 
