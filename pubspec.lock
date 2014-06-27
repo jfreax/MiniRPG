@@ -44,7 +44,7 @@ packages:
   observe:
     description: observe
     source: hosted
-    version: "0.10.0+1"
+    version: "0.10.1"
   paper_elements:
     description: paper_elements
     source: hosted
@@ -53,16 +53,10 @@ packages:
     description: path
     source: hosted
     version: "1.2.1"
-  pixi:
-    description:
-      path: "dist/Pixi.dart"
-      relative: true
-    source: path
-    version: "0.0.0"
   polymer:
     description: polymer
     source: hosted
-    version: "0.11.0+3"
+    version: "0.11.0+4"
   polymer_expressions:
     description: polymer_expressions
     source: hosted

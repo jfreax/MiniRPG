@@ -6,8 +6,8 @@ dependencies:
   core_elements: any
   paper_elements: ">=0.0.1 <0.1.0"
   web_components: ">=0.3.5-dev.3 <0.4.0"
-  pixi:
-      path: dist/Pixi.dart/
+#  pixi:
+#      path: dist/Pixi.dart/
 
 environment:
   sdk: ">=0.8.10+6 <2.0.0"

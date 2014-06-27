@@ -1,0 +1,119 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="packages/core_elements/core_toolbar.html">
+<link rel="import" href="packages/core_elements/core_drawer_panel.html">
+<link rel="import" href="packages/core_elements/core_header_panel.html">
+<link rel="import" href="packages/core_elements/core_icon_button.html">
+
+<polymer-element name="my-scaffold" attributes="responsiveWidth mode">
+<template>
+
+  <style>
+    
+    :host {
+      display: block;
+    }
+    
+    [drawer] {
+      background-color: #fff;
+      box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
+    }
+    
+    [main] {
+      height: 100%;
+      background-color: #eee;
+    }
+    
+    core-toolbar {
+      background-color: #009688;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    
+    #drawerPanel:not([narrow]) #menuButton {
+      display: none;
+    }
+    
+  </style>
+
+  <core-drawer-panel id="drawerPanel" narrow="{{narrow}}" responsiveWidth="{{responsiveWidth}}">
+
+    <div vertical layout drawer>
+
+      <content select="[navigation], nav"></content>
+
+    </div>
+    
+    <core-header-panel main mode="{{mode}}">
+
+      <core-toolbar>
+        <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
+        <content select="[tool]"></content>
+        <span flex>MiniRPG</span>
+        <core-icon-button icon="refresh"></core-icon-button>
+        <core-icon-button icon="add"></core-icon-button>
+      </core-toolbar>
+      
+      <content select="*"></content>
+      
+    </core-header-panel>
+
+  </core-drawer-panel>
+
+</template>
+<script>
+
+  Polymer('my-scaffold', {
+    /**
+     * When the browser window size is smaller than the `responsiveWidth`, 
+     * `core-drawer-panel` changes to a narrow layout. In narrow layout, 
+     * the drawer will be stacked on top of the main panel.
+     *
+     * @attribute responsiveWidth
+     * @type string
+     */    
+    responsiveWidth: '600px',
+
+    /**
+     * Used to control the header and scrolling behaviour of `core-header-panel`
+     *
+     * @attribute mode
+     * @type string
+     */     
+    mode: 'seamed',
+
+    /**
+      * Toggle the drawer panel
+      * @method togglePanel
+      */    
+    togglePanel: function() {
+      this.$.drawerPanel.togglePanel();
+    },
+
+    /**
+      * Open the drawer panel
+      * @method openDrawer
+      */      
+    openDrawer: function() {
+      this.$.drawerPanel.openDrawer();
+    },
+
+    /**
+      * Close the drawer panel
+      * @method closeDrawer
+      */     
+    closeDrawer: function() {
+      this.$.drawerPanel.closeDrawer();
+    }
+    
+  });
+
+</script>
+</polymer-element>
