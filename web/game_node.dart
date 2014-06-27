@@ -15,6 +15,8 @@ class GameNode extends PolymerElement {
   @published int radius = 56;
   @published String type = "empty";
   
+  bool grid = true;
+  
   GameNode.created() : super.created();
   
   
@@ -22,8 +24,10 @@ class GameNode extends PolymerElement {
   {
     GameWorld world = querySelector("game-world");
     
-    x -= x % (radius + NODE_DISTANCE);
-    y -= y % (radius + NODE_DISTANCE);
+    if (grid) {
+      x -= x % (radius + NODE_DISTANCE);
+      y -= y % (radius + NODE_DISTANCE);
+    }
     
     if (x < 0) {
       x = 0;

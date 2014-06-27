@@ -38,7 +38,9 @@ class GameWorld extends PolymerElement {
   Array2d<GameNode> _nodes;
   List<Connection> _connections = new List<Connection>();
   
-  GameNode _currentSelectedNode;
+  GameNode _currentSelectedNode = null;
+  bool _ctrlKey = false;
+  Connection _newConnection = null;
 
 
   GameWorld.created() : super.created()
@@ -65,6 +67,9 @@ class GameWorld extends PolymerElement {
         
     generateMap();
     requestUpdate();
+    
+    window..onKeyDown.listen(keydown)
+          ..onKeyUp.listen(keyup);
   }
   
   final String example_world = """{ 
@@ -108,7 +113,7 @@ class GameWorld extends PolymerElement {
   }
 
   
-  void _connectNodes(GameNode node1, GameNode node2)
+  Connection _connectNodes(GameNode node1, GameNode node2)
   {
     svg.PathElement path = new svg.PathElement();
     svg.PathSegList segList = path.pathSegList;
@@ -122,9 +127,16 @@ class GameWorld extends PolymerElement {
     Connection newConnection = new Connection(node1, node2, path);
     _redrawConnection(newConnection);
     
-    _connections.add(newConnection );
+    _connections.add(newConnection);
     _background.append(path);
-
+        
+    return newConnection;
+  }
+  
+  void _removeConnection(Connection connection)
+  {
+    connection.path.remove();
+    _connections.remove(connection);
   }
   
   void _redrawConnections()
@@ -210,8 +222,14 @@ class GameWorld extends PolymerElement {
    *  Input events
    */
   
-  void keyup(KeyboardEvent e, var detail, Node target)
+  void keydown(KeyboardEvent e)
   {
+    _ctrlKey = e.ctrlKey;
+  }
+  
+  void keyup(KeyboardEvent e)
+  {
+    _ctrlKey = e.ctrlKey;
   }
   
   void mousedbclick(MouseEvent e)
@@ -224,8 +242,22 @@ class GameWorld extends PolymerElement {
   
   void mousedown(Event e)
   {
+    if (_newConnection != null) {
+      if (e.target is GameNode && e.currentTarget != _newConnection.node1) {
+        _connectNodes(_newConnection.node1, e.target);
+      }
+      
+      _removeConnection(_newConnection);
+      _newConnection = null;
+    }
+    
     if (e.target is GameNode) {
       _currentSelectedNode = e.target;
+      if (_ctrlKey) {
+        _newConnection = 
+            _connectNodes(_currentSelectedNode, (new Element.tag('game-node') as GameNode)
+                ..setPosition(_currentSelectedNode.x, _currentSelectedNode.y)..grid = false);
+      }
     }
   }
   
@@ -236,11 +268,18 @@ class GameWorld extends PolymerElement {
   
   void mousemove(MouseEvent e)
   {
-    // move node
-    if (edit && _currentSelectedNode != null) {
+    if (edit) {
       Point p = relMouseCoords(e, $["renderer"]);
-      _currentSelectedNode.setPosition(p.x - (_currentSelectedNode.clientWidth/2), p.y - (_currentSelectedNode.clientHeight/2));
-      _redrawConnections();
+
+      if (_newConnection != null) { // add new connection 
+        _newConnection.node2.setPosition(p.x - (_newConnection.node2.clientWidth/2), p.y - (_newConnection.node2.clientHeight/2));
+        _redrawConnection(_newConnection);
+      } else { // move node
+        if (_currentSelectedNode != null) {
+          _currentSelectedNode.setPosition(p.x - (_currentSelectedNode.clientWidth/2), p.y - (_currentSelectedNode.clientHeight/2));
+          _redrawConnections();
+        }
+      }
     }
   }
   
