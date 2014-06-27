@@ -35,6 +35,7 @@ class GameWorld extends PolymerElement {
   svg.SvgElement _background;
   
   Array2d<GameNode> _nodes;
+  List<Connection> _connections = new List<Connection>();
   
   GameNode _currentSelectedNode;
 
@@ -130,8 +131,35 @@ class GameWorld extends PolymerElement {
     segList.appendItem(path.createSvgPathSegMovetoAbs(x1, y1));
     segList.appendItem(path.createSvgPathSegLinetoAbs(x2, y2));
     segList.appendItem(path.createSvgPathSegClosePath());
-    
+        
     _background.append(path);
+    _connections.add(new Connection(node1, node2, path));
+  }
+  
+  void _redrawConnections()
+  {
+    for( Connection connect in _connections) {
+      svg.PathSegList segList = connect.path.pathSegList;
+      
+      num x1 = connect.node1.x + connect.node1.radius/2;
+      num x2 = connect.node2.x + connect.node2.radius/2;
+      num y1 = connect.node1.y + connect.node1.radius/2;
+      num y2 = connect.node2.y + connect.node2.radius/2;
+      
+      int max_x = max(x1, x2).round();
+      if (max_x > double.parse(_background.attributes["width"]).round()) {
+        _background.attributes["width"] = max_x.toString();
+      }
+      int max_y = max(y1, y2).round();
+      if (max_y > double.parse(_background.attributes["height"]).round()) {
+         _background.attributes["height"] = max_y.toString();
+      }
+      
+      (segList.elementAt(0) as svg.PathSegMovetoAbs).x = x1;
+      (segList.elementAt(0) as svg.PathSegMovetoAbs).y = y1;
+      (segList.elementAt(1) as svg.PathSegLinetoAbs).x = x2;
+      (segList.elementAt(1) as svg.PathSegLinetoAbs).y = y2;
+    }
   }
 
   void _update(num _)
@@ -216,6 +244,7 @@ class GameWorld extends PolymerElement {
     if (edit && _currentSelectedNode != null) {
       Point p = relMouseCoords(e, $["renderer"]);
       _currentSelectedNode.setPosition(p.x - (_currentSelectedNode.clientWidth/2), p.y - (_currentSelectedNode.clientHeight/2));
+      _redrawConnections();
     }
   }
   
@@ -241,5 +270,19 @@ class GameWorld extends PolymerElement {
       y = event.page.y - totalOffsetY;
 
       return new Point(x, y);
+  }
+}
+
+class Connection
+{
+  GameNode node1;
+  GameNode node2;
+  svg.PathElement path;
+  
+  Connection(GameNode node1, GameNode node2, svg.PathElement path)
+  {
+    this.node1 = node1;
+    this.node2 = node2;
+    this.path = path;
   }
 }
