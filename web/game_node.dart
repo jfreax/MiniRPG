@@ -21,6 +21,13 @@ class GameNode extends PolymerElement {
     x -= x % (radius + NODE_DISTANCE);
     y -= y % (radius + NODE_DISTANCE);
     
+    if (x < 0) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+    
     attributes["x"] = x.toString();
     attributes["y"] = y.toString();
     
