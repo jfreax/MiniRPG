@@ -38,6 +38,7 @@ class GameWorld extends PolymerElement {
   Array2d<GameNode> _nodes;
   List<Connection> _connections = new List<Connection>();
   
+  var _currentHovered = null;
   GameNode _currentSelectedNode = null;
   bool _ctrlKey = false;
   Connection _newConnection = null;
@@ -111,6 +112,15 @@ class GameWorld extends PolymerElement {
     
     return newNode;
   }
+  
+  void _removeNode(GameNode node)
+  {
+    var toRemove = _connections.where((Connection c) => c.node1 == node || c.node2 == node);
+    toRemove.forEach((Connection c) => c.path.remove());
+    _connections.removeWhere((Connection c) => c.node1 == node || c.node2 == node);
+    
+    node.remove();
+  }
 
   
   Connection _connectNodes(GameNode node1, GameNode node2)
@@ -137,6 +147,14 @@ class GameWorld extends PolymerElement {
   {
     connection.path.remove();
     _connections.remove(connection);
+  }
+  
+  void _removeConnectionFromPath(svg.PathElement path)
+  {
+    Connection c = _connections.firstWhere((Connection c) => c.path == path);
+    if (c != null) {
+      _removeConnection(c);
+    }
   }
   
   void _redrawConnections()
@@ -230,6 +248,19 @@ class GameWorld extends PolymerElement {
   void keyup(KeyboardEvent e)
   {
     _ctrlKey = e.ctrlKey;
+    
+    print(e.keyCode);
+    switch (e.keyCode) {
+      case 46: // del
+        if (_currentHovered is GameNode) {
+          _removeNode(_currentHovered);
+        } else if (_currentHovered is svg.PathElement) {
+          _removeConnectionFromPath(_currentHovered);
+        }
+        break;
+      default:
+        break;
+    }
   }
   
   void mousedbclick(MouseEvent e)
@@ -268,6 +299,7 @@ class GameWorld extends PolymerElement {
   
   void mousemove(MouseEvent e)
   {
+    _currentHovered = e.target;
     if (edit) {
       Point p = relMouseCoords(e, $["renderer"]);
 

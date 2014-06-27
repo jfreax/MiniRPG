@@ -5,13 +5,14 @@
 
 <polymer-element name="game-world" attributes="size numberOfPlayer debug">
     <template>
-       <svg id="background" width="200" height="100"></svg>
       <div id="renderer" 
-        on-keydown="{{keydown}}"
         on-dblclick={{mousedbclick}}
         on-down="{{mousedown}}"
         on-up={{mouseup}}
-        on-mousemove={{mousemove}}></div>
+        on-mousemove={{mousemove}}>
+                <svg id="background" width="200" height="100"></svg>
+          
+        </div>
       <!--<game-node x="100" y="0"></game-node>-->
       <div id="debug">
           <p>FPS: <span id="debugFPS"></span></p>
@@ -31,6 +32,14 @@
           bottom: 0;
           font-family: verdana, monospace;
           font-size: 10px;
+          
+          user-select: none;
+          -moz-user-select: -moz-none;
+          -moz-user-select: none;
+          -o-user-select: none;
+          -khtml-user-select: none;
+          -webkit-user-select: none;
+          -ms-user-select: none;
         }
 
         .button {
