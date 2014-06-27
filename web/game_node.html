@@ -4,17 +4,22 @@
 
 <polymer-element name="game-node" attributes="x y type">
     <template>
-      <div class="fab red" style="left: {{ x }}px; top: {{ y }}px;">
+      <div class="fab red">
         <core-icon icon="more-horiz"></core-icon>
         <paper-ripple class="circle recenteringTouch" fit></paper-ripple>
       </div>
 
       <style>
+        :host {
+          position: absolute;
+          left: {{ x }}px;
+          top: {{ y }}px;
+        }
         .fab {
           position: relative;
           display: inline-block;
-          width: 56px;
-          height: 56px;
+          width: {{ radius }}px;
+          height: {{ radius }}px;
           border-radius: 50%;
           color: #fff;
           fill: #fff;
@@ -51,5 +56,10 @@
         }
       </style>
     </template>
+    <style>
+      game-node {
+          position: absolute;
+      }
+    </style>
     <script type="application/dart" src="game_node.dart"></script>
 </polymer-element>

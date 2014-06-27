@@ -5,8 +5,8 @@
 
 <polymer-element name="game-world" attributes="size numberOfPlayer debug">
     <template>
+       <svg id="background" width="200" height="100"></svg>
       <div id="renderer" on-key-up="{{keyup}}"></div>
-      <svg id="background" width="200" height="100"></svg>
       <!--<game-node x="100" y="0"></game-node>-->
       <div id="debug">
           <p>FPS: <span id="debugFPS"></span></p>
@@ -14,33 +14,38 @@
 
       <style>
         #renderer, #background {
-            position: absolute;
-            top: 0;
-            left: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
         }
+        
+        #renderer {
+          z-index: 10;
+        }
+        
         #debug {
-            position: fixed;
-            bottom: 0;
-            font-family: verdana, monospace;
-            font-size: 10px;
+          position: fixed;
+          bottom: 0;
+          font-family: verdana, monospace;
+          font-size: 10px;
         }
 
         .button {
-            display: inline-block;
-            position: relative;
-            width: 120px;
-            height: 32px;
-            line-height: 32px;
-            border-radius: 2px;
-            font-size: 0.9em;
-            background-color: #fff;
-            color: #646464;
+          display: inline-block;
+          position: relative;
+          width: 120px;
+          height: 32px;
+          line-height: 32px;
+          border-radius: 2px;
+          font-size: 0.9em;
+          background-color: #fff;
+          color: #646464;
         }
       </style>
     </template>
     <style>
       game-world {
-          position: relative;
+        position: relative;
       }
     </style>
     <script type="application/dart" src="game_world.dart"></script>

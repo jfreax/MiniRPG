@@ -1,5 +1,6 @@
 import 'package:polymer/polymer.dart';
 import 'dart:html';
+import 'dart:svg' as svg;
 import 'dart:math';
 
 import 'game_node.dart';
@@ -22,11 +23,14 @@ class GameWorld extends PolymerElement {
   SpanElement _fpsDisplay;
 
   DivElement _renderer;
+  svg.SvgElement _background;
 
 
   GameWorld.created() : super.created()
   {
     _renderer = $['renderer'] as DivElement;
+    _background = $['background'] as svg.SvgElement;
+    
     _fpsDisplay = $['debugFPS'] as SpanElement;
     _fpsDisplay.text = "0";
     
@@ -36,18 +40,33 @@ class GameWorld extends PolymerElement {
   
   void generateMap()
   {
-    _addNode(100, 0);
-    _addNode(100, 80);
+    GameNode node1 = _addNode(100, 0);
+    GameNode node2 = _addNode(100, 80);
     
+    _connectNodes(node1, node2);
   }
   
-  void _addNode(num x, num y)
+  GameNode _addNode(num x, num y)
   {
     GameNode newNode = new Element.tag('game-node') as GameNode;
     newNode.setPosition(x, y);
-
-    
     _renderer.children.add(newNode);
+    
+    return newNode;
+  }
+  
+  void _connectNodes(GameNode node1, GameNode node2)
+  {
+    svg.PathElement path = new svg.PathElement();
+    svg.PathSegList segList = path.pathSegList;
+    path.attributes["stroke"] = "red";
+    path.attributes["stroke-width"] = "20";
+
+    segList.appendItem(path.createSvgPathSegMovetoAbs(node1.x + node1.radius/2, node1.y + node1.radius/2));
+    segList.appendItem(path.createSvgPathSegLinetoAbs(node2.x + node2.radius/2, node2.y + node2.radius/2));
+    segList.appendItem(path.createSvgPathSegClosePath());
+    
+    _background.append(path);
   }
 
   void _update(num _)
