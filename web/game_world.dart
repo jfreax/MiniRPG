@@ -88,26 +88,23 @@ class GameWorld extends PolymerElement {
     //    GameNode newNode = _addNode(pos, lvl);
     //  }
     //}
-    GameNode node1 = _addNode(1, 0);
-    GameNode node2 = _addNode(1, 1);
+    GameNode node1 = _addNode(30, 0);
+    GameNode node2 = _addNode(30, 100);
     //GameNode node3 = _addNode(2, 1);
     //_addNode(3, 1);_addNode(4, 1);
     
     _connectNodes(node1, node2);
   }
   
-  GameNode _addNode(num pos, num lvl)
+  GameNode _addNode(num x, num y)
   {
-    num x = (width / (4 * size)) * pos;
-    num y = (height / size) * lvl;
-        
     GameNode newNode = new Element.tag('game-node') as GameNode;
     newNode.setPosition(x, y);
     _renderer.children.add(newNode);
-    _nodes[pos][lvl] = newNode;
     
     return newNode;
   }
+
   
   void _connectNodes(GameNode node1, GameNode node2)
   {
@@ -193,12 +190,19 @@ class GameWorld extends PolymerElement {
   {
   }
   
+  void mousedbclick(MouseEvent e)
+  {
+    if (!(e.target is GameNode)) {
+      Point p = relMouseCoords(e, $["renderer"]);
+      _addNode(p.x, p.y);
+    }
+  }
+  
   void mousedown(Event e)
   {
     if (e.target is GameNode) {
       _currentSelectedNode = e.target;
     }
-    print(e.target is GameNode);
   }
   
   void mouseup(Event e)
@@ -219,11 +223,11 @@ class GameWorld extends PolymerElement {
    * Helper functions
    */
 
-  Point relMouseCoords(MouseEvent event, HtmlElement currentElement){
-      var totalOffsetX = 0;
-      var totalOffsetY = 0;
-      var x = 0;
-      var y = 0;
+  Point relMouseCoords(MouseEvent event, HtmlElement currentElement) {
+      num totalOffsetX = 0;
+      num totalOffsetY = 0;
+      num x = 0;
+      num y = 0;
 
       do {
           totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
