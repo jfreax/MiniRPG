@@ -90,7 +90,7 @@ class GameWorld extends PolymerElement {
     //  }
     //}
     GameNode node1 = _addNode(30, 0);
-    GameNode node2 = _addNode(30, 100);
+    GameNode node2 = _addNode(90, 100);
     //GameNode node3 = _addNode(2, 1);
     //_addNode(3, 1);_addNode(4, 1);
     

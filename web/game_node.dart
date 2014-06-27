@@ -5,6 +5,8 @@ import 'package:polymer/polymer.dart';
 
 @CustomTag('game-node')
 class GameNode extends PolymerElement {
+  final int NODE_DISTANCE = 4;
+  
   // attributes
   @published num x = 0;
   @published num y = 0;
@@ -16,6 +18,9 @@ class GameNode extends PolymerElement {
   
   void setPosition(num x, num y)
   {
+    x -= x % (radius + NODE_DISTANCE);
+    y -= y % (radius + NODE_DISTANCE);
+    
     attributes["x"] = x.toString();
     attributes["y"] = y.toString();
     
