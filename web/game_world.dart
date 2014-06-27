@@ -2,12 +2,14 @@ import 'package:polymer/polymer.dart';
 import 'dart:html';
 import 'dart:svg' as svg;
 import 'dart:math';
+import 'dart:convert';
 
 import 'utils/Array2d.dart';
 import 'game_node.dart';
 
 @CustomTag('game-world')
 class GameWorld extends PolymerElement {
+  final String APP_NAME = "MiniRPG";
   final int MIN_WIDTH = 800;
   final int MIN_HEIGHT= 600;
   
@@ -17,6 +19,7 @@ class GameWorld extends PolymerElement {
   @published num size = 5;
   @published num numberOfPlayer = 2;
   @published bool debug = false;
+  @published bool edit = false;
   
   // public
   num height;
@@ -32,11 +35,13 @@ class GameWorld extends PolymerElement {
   svg.SvgElement _background;
   
   Array2d<GameNode> _nodes;
+  
+  GameNode _currentSelectedNode;
 
 
   GameWorld.created() : super.created()
   {
-    _nodes = new Array2d<GameNode>(4 * size, size);
+    _nodes = new Array2d<GameNode>(4 * size + 10, size + 10);
     
     _renderer = $['renderer'] as DivElement;
     _background = $['background'] as svg.SvgElement;
@@ -49,6 +54,10 @@ class GameWorld extends PolymerElement {
       setDebug(window.localStorage["debug"].toLowerCase() == "true");
     }
     
+    if (window.localStorage.containsKey("edit")) {
+      setEdit(window.localStorage["edit"].toLowerCase() == "true");
+    }
+    
     width = window.innerWidth;
     height = window.innerHeight;
         
@@ -56,12 +65,33 @@ class GameWorld extends PolymerElement {
     requestUpdate();
   }
   
+  final String example_world = """{ 
+        "size": {"x": "800", "y": "600"},
+        "nodes": []
+      } """;
+  
   void generateMap()
   {
+    Map world = JSON.decode(example_world);
+    print(world["size"]["x"]);
+    
+    //for(int i = 0; i < 20; i++) {
+    //  int pos = 0;
+    //  int lvl = ((rng.nextInt(size) + rng.nextInt(size)) / 2).round();;
+
+    //  for(int j = 0; j < lvl; j++) {
+    //    pos += rng.nextInt(size*4);
+    //  }
+    //  pos = (pos/lvl).round();
+      
+    //  if (_nodes[pos][lvl] == null) {
+    //    GameNode newNode = _addNode(pos, lvl);
+    //  }
+    //}
     GameNode node1 = _addNode(1, 0);
     GameNode node2 = _addNode(1, 1);
-    GameNode node3 = _addNode(2, 1);
-    _addNode(3, 1);_addNode(4, 1);
+    //GameNode node3 = _addNode(2, 1);
+    //_addNode(3, 1);_addNode(4, 1);
     
     _connectNodes(node1, node2);
   }
@@ -70,9 +100,7 @@ class GameWorld extends PolymerElement {
   {
     num x = (width / (4 * size)) * pos;
     num y = (height / size) * lvl;
-    
-    print(height);
-    
+        
     GameNode newNode = new Element.tag('game-node') as GameNode;
     newNode.setPosition(x, y);
     _renderer.children.add(newNode);
@@ -134,6 +162,18 @@ class GameWorld extends PolymerElement {
     }
   }
   
+  void setEdit(bool edit)
+  {
+    this.edit = edit;
+    window.localStorage["edit"] = edit.toString();
+    
+    if (edit) {
+      querySelector("my-scaffold").attributes["headline"] = "$APP_NAME - Edit Mode";
+    } else {
+      querySelector("my-scaffold").attributes["headline"] = APP_NAME;
+    }
+  }
+  
   void requestUpdate()
   {
     window.requestAnimationFrame(_update);
@@ -145,11 +185,57 @@ class GameWorld extends PolymerElement {
     _fpsDisplay.text = "${_fpsAverage.round()} fps";
   }
   
-  // input events
-  keyup(KeyboardEvent e, var detail, Node target)
+  /**
+   *  Input events
+   */
+  
+  void keyup(KeyboardEvent e, var detail, Node target)
   {
-    print("OK");
-    print("Key $e.keyCode");
   }
+  
+  void mousedown(Event e)
+  {
+    if (e.target is GameNode) {
+      _currentSelectedNode = e.target;
+    }
+    print(e.target is GameNode);
+  }
+  
+  void mouseup(Event e)
+  {
+    _currentSelectedNode = null;
+  }
+  
+  void mousemove(MouseEvent e)
+  {
+    // move node
+    if (edit && _currentSelectedNode != null) {
+      Point p = relMouseCoords(e, $["renderer"]);
+      _currentSelectedNode.setPosition(p.x - (_currentSelectedNode.clientWidth/2), p.y - (_currentSelectedNode.clientHeight/2));
+    }
+  }
+  
+  /**
+   * Helper functions
+   */
 
+  Point relMouseCoords(MouseEvent event, HtmlElement currentElement){
+      var totalOffsetX = 0;
+      var totalOffsetY = 0;
+      var x = 0;
+      var y = 0;
+
+      do {
+          totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+          totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+          
+          currentElement = currentElement.offsetParent;
+      }
+      while(currentElement != null);
+
+      x = event.page.x - totalOffsetX;
+      y = event.page.y - totalOffsetY;
+
+      return new Point(x, y);
+  }
 }

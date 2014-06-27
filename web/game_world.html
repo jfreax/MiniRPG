@@ -6,7 +6,7 @@
 <polymer-element name="game-world" attributes="size numberOfPlayer debug">
     <template>
        <svg id="background" width="200" height="100"></svg>
-      <div id="renderer" on-key-up="{{keyup}}"></div>
+      <div id="renderer" on-key-up="{{keyup}}" on-down="{{mousedown}}" on-up={{mouseup}} on-mousemove={{mousemove}}></div>
       <!--<game-node x="100" y="0"></game-node>-->
       <div id="debug">
           <p>FPS: <span id="debugFPS"></span></p>
@@ -17,6 +17,8 @@
           position: absolute;
           top: 0;
           left: 0;
+          right: 0;
+          bottom: 0;
         }
 
         #debug {

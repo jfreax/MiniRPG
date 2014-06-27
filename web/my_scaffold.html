@@ -12,7 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="packages/core_elements/core_header_panel.html">
 <link rel="import" href="packages/core_elements/core_icon_button.html">
 
-<polymer-element name="my-scaffold" attributes="responsiveWidth mode">
+<polymer-element name="my-scaffold" attributes="responsiveWidth mode headline">
 <template>
 
   <style>
@@ -56,7 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <core-toolbar>
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
         <content select="[tool]"></content>
-        <span flex>MiniRPG</span>
+        <span flex>{{ headline }}</span>
         <core-icon-button icon="refresh"></core-icon-button>
         <core-icon-button icon="add"></core-icon-button>
       </core-toolbar>
@@ -71,10 +71,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script>
 
   Polymer('my-scaffold', {
+    headline: "MiniRPG",
+    
     /**
      * When the browser window size is smaller than the `responsiveWidth`, 
      * `core-drawer-panel` changes to a narrow layout. In narrow layout, 
-     * the drawer will be stacked on top of the main panel.
+     * the drawer will be stacked on top of the main panel.    world.attr
+
      *
      * @attribute responsiveWidth
      * @type string

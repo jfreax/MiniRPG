@@ -1,0 +1,14 @@
+<link rel="import" href="packages/polymer/polymer.html">
+<link rel="import" href="packages/paper_elements/paper_checkbox.html">
+
+<polymer-element name="minirpg-menu" attributes="edit debug">
+  <template>
+    <div center horizontal layout style="margin: 32px">
+      <paper-checkbox checked="{{ edit }}" on-change="{{editChanged}}" label="Edit mode" id="editCheckbox"></paper-checkbox>
+    </div>
+     <div center horizontal layout style="margin: 32px">
+      <paper-checkbox checked="{{ debug }}" on-change="{{debugChanged}}" label="Debug mode" id="debugCheckbox"></paper-checkbox>
+    </div>
+  </template>
+  <script type="application/dart" src="minirpg_menu.dart"></script>
+</polymer-element>
