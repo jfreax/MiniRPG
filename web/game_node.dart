@@ -1,7 +1,9 @@
 library mini_rpg.gamenode;
 
 import 'package:polymer/polymer.dart';
-//import 'dart:html';
+import 'dart:html';
+
+import 'game_world.dart';
 
 @CustomTag('game-node')
 class GameNode extends PolymerElement {
@@ -18,14 +20,20 @@ class GameNode extends PolymerElement {
   
   void setPosition(num x, num y)
   {
+    GameWorld world = querySelector("game-world");
+    
     x -= x % (radius + NODE_DISTANCE);
     y -= y % (radius + NODE_DISTANCE);
     
     if (x < 0) {
       x = 0;
+    } else if (x + radius > world.width) {
+      x -= (radius + NODE_DISTANCE);
     }
     if (y < 0) {
       y = 0;
+    } else if(y + radius > world.height) {
+      y -= (radius + NODE_DISTANCE);
     }
     
     attributes["x"] = x.toString();

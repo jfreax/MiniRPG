@@ -12,6 +12,7 @@ class GameWorld extends PolymerElement {
   final String APP_NAME = "MiniRPG";
   final int MIN_WIDTH = 800;
   final int MIN_HEIGHT= 600;
+  final int CONNECTION_LINE_WIDTH = 20;
   
   final Random rng = new Random();
   
@@ -22,8 +23,8 @@ class GameWorld extends PolymerElement {
   @published bool edit = false;
   
   // public
-  num height;
-  num width;
+  num height = 800;
+  num width = 600;
   
   // private
   num _renderTime;
@@ -59,8 +60,8 @@ class GameWorld extends PolymerElement {
       setEdit(window.localStorage["edit"].toLowerCase() == "true");
     }
     
-    width = window.innerWidth;
-    height = window.innerHeight;
+    width = max(this.width, MIN_WIDTH);
+    height = max(this.height, MIN_HEIGHT);
         
     generateMap();
     requestUpdate();
@@ -112,54 +113,49 @@ class GameWorld extends PolymerElement {
     svg.PathElement path = new svg.PathElement();
     svg.PathSegList segList = path.pathSegList;
     path.attributes["stroke"] = "red";
-    path.attributes["stroke-width"] = "20";
+    path.attributes["stroke-width"] = CONNECTION_LINE_WIDTH.toString();
     
-    num x1 = node1.x + node1.radius/2;
-    num x2 = node2.x + node2.radius/2;
-    num y1 = node1.y + node1.radius/2;
-    num y2 = node2.y + node2.radius/2;
-    
-    num max_x = max(x1, x2);
-    if (max_x > int.parse(_background.attributes["width"])) {
-      _background.attributes["width"] = max_x.toString();
-    }
-    num max_y = max(y1, y2);
-    if (max_y > int.parse(_background.attributes["height"])) {
-      _background.attributes["height"] = max_y.toString();
-    }
-
-    segList.appendItem(path.createSvgPathSegMovetoAbs(x1, y1));
-    segList.appendItem(path.createSvgPathSegLinetoAbs(x2, y2));
+    segList.appendItem(path.createSvgPathSegMovetoAbs(0, 0));
+    segList.appendItem(path.createSvgPathSegLinetoAbs(0, 0));
     segList.appendItem(path.createSvgPathSegClosePath());
         
+    Connection newConnection = new Connection(node1, node2, path);
+    _redrawConnection(newConnection);
+    
+    _connections.add(newConnection );
     _background.append(path);
-    _connections.add(new Connection(node1, node2, path));
+
   }
   
   void _redrawConnections()
   {
     for( Connection connect in _connections) {
-      svg.PathSegList segList = connect.path.pathSegList;
-      
-      num x1 = connect.node1.x + connect.node1.radius/2;
-      num x2 = connect.node2.x + connect.node2.radius/2;
-      num y1 = connect.node1.y + connect.node1.radius/2;
-      num y2 = connect.node2.y + connect.node2.radius/2;
-      
-      int max_x = max(x1, x2).round();
-      if (max_x > double.parse(_background.attributes["width"]).round()) {
-        _background.attributes["width"] = max_x.toString();
-      }
-      int max_y = max(y1, y2).round();
-      if (max_y > double.parse(_background.attributes["height"]).round()) {
-         _background.attributes["height"] = max_y.toString();
-      }
-      
-      (segList.elementAt(0) as svg.PathSegMovetoAbs).x = x1;
-      (segList.elementAt(0) as svg.PathSegMovetoAbs).y = y1;
-      (segList.elementAt(1) as svg.PathSegLinetoAbs).x = x2;
-      (segList.elementAt(1) as svg.PathSegLinetoAbs).y = y2;
+      _redrawConnection(connect);
     }
+  }
+  
+  void _redrawConnection(Connection connect)
+  {
+    svg.PathSegList segList = connect.path.pathSegList;
+    
+    num x1 = connect.node1.x + connect.node1.radius/2;
+    num x2 = connect.node2.x + connect.node2.radius/2;
+    num y1 = connect.node1.y + connect.node1.radius/2;
+    num y2 = connect.node2.y + connect.node2.radius/2;
+    
+    int max_x = max(x1, x2).ceil() + CONNECTION_LINE_WIDTH;
+    if (max_x > double.parse(_background.attributes["width"]).floor()) {
+      _background.attributes["width"] = max_x.toString();
+    }
+    int max_y = max(y1, y2).ceil() + CONNECTION_LINE_WIDTH;
+    if (max_y > double.parse(_background.attributes["height"]).floor()) {
+       _background.attributes["height"] = max_y.toString();
+    }
+    
+    (segList.elementAt(0) as svg.PathSegMovetoAbs).x = x1;
+    (segList.elementAt(0) as svg.PathSegMovetoAbs).y = y1;
+    (segList.elementAt(1) as svg.PathSegLinetoAbs).x = x2;
+    (segList.elementAt(1) as svg.PathSegLinetoAbs).y = y2;
   }
 
   void _update(num _)
