@@ -12,7 +12,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="packages/core_elements/core_header_panel.html">
 <link rel="import" href="packages/core_elements/core_icon_button.html">
 
-<polymer-element name="my-scaffold" attributes="responsiveWidth mode headline">
+<link rel="import" href="ui/dialog_export.html">
+
+
+<polymer-element name="my-scaffold" attributes="responsiveWidth mode headline download downloadDialog">
 <template>
 
   <style>
@@ -40,7 +43,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     #drawerPanel:not([narrow]) #menuButton {
       display: none;
     }
-    
   </style>
 
   <core-drawer-panel id="drawerPanel" narrow="{{narrow}}" responsiveWidth="{{responsiveWidth}}">
@@ -52,26 +54,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
     
     <core-header-panel main mode="{{mode}}">
-
       <core-toolbar>
         <core-icon-button id="menuButton" icon="menu" on-tap="{{togglePanel}}"></core-icon-button>
         <content select="[tool]"></content>
         <span flex>{{ headline }}</span>
+        <core-icon-button style="display: {{download}};" icon="file-download" on-tap={{toggleDownloadDialog}}></core-icon-button>
         <core-icon-button icon="refresh"></core-icon-button>
-        <core-icon-button icon="add"></core-icon-button>
       </core-toolbar>
       
       <content select="*"></content>
       
     </core-header-panel>
-
   </core-drawer-panel>
+  
+  <dialog-export opened="{{downloadDialog}}"></dialog-export>
 
 </template>
 <script>
 
   Polymer('my-scaffold', {
     headline: "MiniRPG",
+    download: "none",
+    downloadDialog: false,
     
     /**
      * When the browser window size is smaller than the `responsiveWidth`, 
@@ -114,8 +118,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       */     
     closeDrawer: function() {
       this.$.drawerPanel.closeDrawer();
-    }
+    },
     
+    toggleDownloadDialog: function() {
+      this.downloadDialog = !this.downloadDialog;
+    }
   });
 
 </script>

@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'utils/Array2d.dart';
 import 'game_node.dart';
+import 'my_scaffold.dart';
 
 @CustomTag('game-world')
 class GameWorld extends PolymerElement {
@@ -68,7 +69,7 @@ class GameWorld extends PolymerElement {
         
     generateMap();
     requestUpdate();
-    
+        
     window..onKeyDown.listen(keydown)
           ..onKeyUp.listen(keyup);
   }
@@ -218,10 +219,14 @@ class GameWorld extends PolymerElement {
     this.edit = edit;
     window.localStorage["edit"] = edit.toString();
     
+    HtmlElement scaffold = querySelector("my-scaffold");
     if (edit) {
-      querySelector("my-scaffold").attributes["headline"] = "$APP_NAME - Edit Mode";
+      scaffold.attributes["headline"] = "$APP_NAME - Edit Mode";
+      scaffold.attributes["download"] = "display-inline";
+      
     } else {
-      querySelector("my-scaffold").attributes["headline"] = APP_NAME;
+      scaffold.attributes["headline"] = APP_NAME;
+      scaffold.attributes["download"] = "none";
     }
   }
   
@@ -249,7 +254,6 @@ class GameWorld extends PolymerElement {
   {
     _ctrlKey = e.ctrlKey;
     
-    print(e.keyCode);
     switch (e.keyCode) {
       case 46: // del
         if (_currentHovered is GameNode) {

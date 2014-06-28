@@ -1,0 +1,57 @@
+<link rel="import" href="packages/core_elements/core_overlay.html">
+<link rel="import" href="packages/core_elements/core_transition_css.html">
+
+<link rel="import" href="packages/paper_elements/paper_button.html">
+<link rel="import" href="packages/paper_elements/paper_input.html">
+
+<polymer-element name="dialog-export" attributes="opened text">
+  <template>
+    <core-overlay opened="{{opened}}" class="dialog" backdrop transition="core-transition-top">
+      <h2>JSON Export</h2>
+      <div layout vertical>
+      <paper-input id="exportedText" multiline rows="8" label="..." autofocus value="{{text}}"></paper-input>
+      <paper-button raisedButton class="colored" label="Close" core-overlay-toggle></paper-button>
+      </div>
+    </core-overlay>
+    <style>
+      .dialog {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        overflow: hidden;
+        background: white;
+        padding:30px 42px;
+        outline: 1px solid rgba(0,0,0,0.2);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      }
+      
+      paper-button {
+        margin: 1em;
+      }
+  
+      paper-button.colored {
+        color: #4285f4;
+        fill: #4285f4;
+      }
+  
+      paper-button[raisedButton].colored {
+        background: #4285f4;
+        color: #fff;
+      }
+  
+      paper-button[raisedButton].colored #ripple,
+      paper-button[raisedButton].colored::shadow #ripple {
+        color: #2a56c6;
+      }
+  
+      paper-button[raisedButton].colored #focusBg,
+      paper-button[raisedButton].colored::shadow #focusBg {
+        background: #3367d6;
+      }
+    </style>
+  </template>
+  <script type="application/dart" src="dialog_export.dart"></script>
+</polymer-element>
